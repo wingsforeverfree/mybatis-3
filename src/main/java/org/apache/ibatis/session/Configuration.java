@@ -125,7 +125,7 @@ public class Configuration {
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
   protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
   protected Set<String> lazyLoadTriggerMethods = new HashSet<>(
-      Arrays.asList("equals", "clone", "hashCode", "toString"));
+    Arrays.asList("equals", "clone", "hashCode", "toString"));
   protected Integer defaultStatementTimeout;
   protected Integer defaultFetchSize;
   protected ResultSetType defaultResultSetType;
@@ -149,26 +149,79 @@ public class Configuration {
    */
   protected Class<?> configurationFactory;
 
+  /**
+   * 用于注册Mapper接口信息，建立Mapper接口的Class对象和MapperProxyFactory对象之间的关系，其中MapperProxyFactory对象用于创建Mapper动态代理对象。
+   */
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+  /**
+   * 用于注册MyBatis插件信息，MyBatis插件实际上就是一个拦截器。
+   */
   protected final InterceptorChain interceptorChain = new InterceptorChain();
+  /**
+   * 用于注册所有的TypeHandler，并建立JDBC类型与TypeHandler之间的对应关系
+   */
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
+  /**
+   * 用于注册所有的类型别名
+   */
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+  /**
+   * 用于注册LanguageDriver(语言驱动程序)用于解析SQL配置，将配置信息转换为SqlSource对象。
+   */
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+  /**
+   * MappedStatement对象描述<insert|select|update|delete>等标签或者通过@Select、@Delete、@Update、@Insert等注解配置的SQL信息。
+   * MyBatis 将所有的MappedStatement对象注册到该属性中，其中Key为Mapper的Id(mapper的命名空间+标签id)，Value为MappedStatement对象。
+   */
   protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>(
-      "Mapped Statements collection")
-          .conflictMessageProducer((savedValue, targetValue) -> ". please check " + savedValue.getResource() + " and "
-              + targetValue.getResource());
+    "Mapped Statements collection")
+    .conflictMessageProducer((savedValue, targetValue) -> ". please check " + savedValue.getResource() + " and "
+      + targetValue.getResource());
+  /**
+   * 用于注册Mapper中配置的所有缓存信息，其中Key为Cache的Id，也就是Mapper的命名空间，Value为Cache对象。
+   */
   protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
+  /**
+   * 用于注册Mapper配置文件中通过<resultMap>标签配置的ResultMap信息，ResultMap用于建立Java实体属性与数据库字段之间的映射关系，
+   * 其中Key为ResultMap的Id，该Id是由Mapper命名空间和<resultMap>标签的id属性组成的，Value为解析<resultMap>标签后得到的ResultMap对象。
+   */
   protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
+  /**
+   * 注意：已经被废弃
+   * 用于注册Mapper中通过<parameterMap>标签注册的参数映射信息。Key为ParameterMap的Id，由Mapper命名空间和<parameterMap>标签的id属性构成，
+   * Value为解析<parameterMap>标签后得到的ParameterMap对象。
+   */
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
+  /**
+   * 用于注册KeyGenerator，KeyGenerator是MyBatis的主键生成器，MyBatis中提供了3种KeyGenerator，
+   * 即Jdbc3KeyGenerator （数据库自增主键）、NoKeyGenerator（无自增主键）、SelectKeyGenerator（通过select语句查询自增主键，例如oracle的sequence）
+   */
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
 
+  /**
+   * 用于注册所有Mapper XML配置文件路径。
+   */
   protected final Set<String> loadedResources = new HashSet<>();
+  /**
+   * 用于注册Mapper中通过<sql>标签配置的SQL片段，Key为SQL片段的Id，Value为MyBatis封装的表示XML节点的XNode对象。
+   */
   protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
+  /**
+   * 用于注册解析出现异常的XMLStatementBuilder对象
+   */
   protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的CacheRefResolver对象。
+   */
   protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的ResultMapResolver对象。
+   */
   protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<>();
+  /**
+   * 用于注册解析出现异常的MethodResolver对象
+   */
   protected final Collection<MethodResolver> incompleteMethods = new LinkedList<>();
 
   private final ReentrantLock incompleteResultMapsLock = new ReentrantLock();
@@ -256,7 +309,6 @@ public class Configuration {
    * {@link org.apache.ibatis.annotations.SelectProvider}).
    *
    * @return the default type for sql provider annotation
-   *
    * @since 3.5.6
    */
   public Class<?> getDefaultSqlProviderType() {
@@ -267,9 +319,7 @@ public class Configuration {
    * Sets an applying type when omit a type on sql provider annotation(e.g.
    * {@link org.apache.ibatis.annotations.SelectProvider}).
    *
-   * @param defaultSqlProviderType
-   *          the default type for sql provider annotation
-   *
+   * @param defaultSqlProviderType the default type for sql provider annotation
    * @since 3.5.6
    */
   public void setDefaultSqlProviderType(Class<?> defaultSqlProviderType) {
@@ -311,9 +361,7 @@ public class Configuration {
   /**
    * Sets the default value of 'nullable' attribute on 'foreach' tag.
    *
-   * @param nullableOnForEach
-   *          If nullable, set to {@code true}
-   *
+   * @param nullableOnForEach If nullable, set to {@code true}
    * @since 3.5.9
    */
   public void setNullableOnForEach(boolean nullableOnForEach) {
@@ -326,7 +374,6 @@ public class Configuration {
    * Default is {@code false}.
    *
    * @return If nullable, set to {@code true}
-   *
    * @since 3.5.9
    */
   public boolean isNullableOnForEach() {
@@ -409,7 +456,6 @@ public class Configuration {
    * Gets the auto mapping unknown column behavior.
    *
    * @return the auto mapping unknown column behavior
-   *
    * @since 3.4.0
    */
   public AutoMappingUnknownColumnBehavior getAutoMappingUnknownColumnBehavior() {
@@ -419,9 +465,7 @@ public class Configuration {
   /**
    * Sets the auto mapping unknown column behavior.
    *
-   * @param autoMappingUnknownColumnBehavior
-   *          the new auto mapping unknown column behavior
-   *
+   * @param autoMappingUnknownColumnBehavior the new auto mapping unknown column behavior
    * @since 3.4.0
    */
   public void setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior) {
@@ -515,7 +559,6 @@ public class Configuration {
    * Gets the default fetch size.
    *
    * @return the default fetch size
-   *
    * @since 3.3.0
    */
   public Integer getDefaultFetchSize() {
@@ -525,9 +568,7 @@ public class Configuration {
   /**
    * Sets the default fetch size.
    *
-   * @param defaultFetchSize
-   *          the new default fetch size
-   *
+   * @param defaultFetchSize the new default fetch size
    * @since 3.3.0
    */
   public void setDefaultFetchSize(Integer defaultFetchSize) {
@@ -538,7 +579,6 @@ public class Configuration {
    * Gets the default result set type.
    *
    * @return the default result set type
-   *
    * @since 3.5.2
    */
   public ResultSetType getDefaultResultSetType() {
@@ -548,9 +588,7 @@ public class Configuration {
   /**
    * Sets the default result set type.
    *
-   * @param defaultResultSetType
-   *          the new default result set type
-   *
+   * @param defaultResultSetType the new default result set type
    * @since 3.5.2
    */
   public void setDefaultResultSetType(ResultSetType defaultResultSetType) {
@@ -597,9 +635,7 @@ public class Configuration {
    * Set a default {@link TypeHandler} class for {@link Enum}. A default {@link TypeHandler} is
    * {@link org.apache.ibatis.type.EnumTypeHandler}.
    *
-   * @param typeHandler
-   *          a type handler class for {@link Enum}
-   *
+   * @param typeHandler a type handler class for {@link Enum}
    * @since 3.4.5
    */
   public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> typeHandler) {
@@ -616,7 +652,6 @@ public class Configuration {
    * Gets the mapper registry.
    *
    * @return the mapper registry
-   *
    * @since 3.2.2
    */
   public MapperRegistry getMapperRegistry() {
@@ -651,7 +686,6 @@ public class Configuration {
    * Gets the interceptors.
    *
    * @return the interceptors
-   *
    * @since 3.2.2
    */
   public List<Interceptor> getInterceptors() {
@@ -676,11 +710,8 @@ public class Configuration {
   /**
    * Gets the language driver.
    *
-   * @param langClass
-   *          the lang class
-   *
+   * @param langClass the lang class
    * @return the language driver
-   *
    * @since 3.5.1
    */
   public LanguageDriver getLanguageDriver(Class<? extends LanguageDriver> langClass) {
@@ -695,7 +726,6 @@ public class Configuration {
    * Gets the default scripting language instance.
    *
    * @return the default scripting language instance
-   *
    * @deprecated Use {@link #getDefaultScriptingLanguageInstance()}
    */
   @Deprecated
@@ -707,31 +737,66 @@ public class Configuration {
     return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
   }
 
+  /**
+   * 创建ParameterHandler的工厂方法
+   *
+   * @param mappedStatement
+   * @param parameterObject
+   * @param boundSql
+   * @return
+   */
   public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject,
-      BoundSql boundSql) {
+                                              BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement,
-        parameterObject, boundSql);
+      parameterObject, boundSql);
     return (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
   }
 
+  /**
+   * 创建ResultSetHandler的工厂方法
+   *
+   * @param executor
+   * @param mappedStatement
+   * @param rowBounds
+   * @param parameterHandler
+   * @param resultHandler
+   * @param boundSql
+   * @return
+   */
   public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds,
-      ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql) {
+                                              ParameterHandler parameterHandler, ResultHandler resultHandler,
+                                              BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler,
-        resultHandler, boundSql, rowBounds);
+      resultHandler, boundSql, rowBounds);
     return (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
   }
 
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
-      Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+                                              Object parameterObject, RowBounds rowBounds,
+                                              ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
-        rowBounds, resultHandler, boundSql);
+      rowBounds, resultHandler, boundSql);
     return (StatementHandler) interceptorChain.pluginAll(statementHandler);
   }
 
+  /**
+   * 创建Executor执行器的工厂方法
+   *
+   * @param transaction 事务
+   * @return 执行器
+   */
   public Executor newExecutor(Transaction transaction) {
     return newExecutor(transaction, defaultExecutorType);
   }
 
+  /**
+   * 1.创建Executor执行器的工厂方法 简单工厂方法，根据不同的入参，生成不同的类对象
+   * 2. MyBatis采用工厂模式创建Executor、StatementHandler、ResultSetHandler、ParameterHandler的另一个目的是实现插件拦截逻辑
+   *
+   * @param transaction 事务
+   * @param executorType 执行器类型
+   * @return 执行器
+   */
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     Executor executor;
@@ -1064,9 +1129,7 @@ public class Configuration {
   /**
    * Extracts namespace from fully qualified statement id.
    *
-   * @param statementId
-   *          the statement id
-   *
+   * @param statementId the statement id
    * @return namespace or null when id does not contain period.
    */
   protected String extractNamespace(String statementId) {
@@ -1083,7 +1146,7 @@ public class Configuration {
           ResultMap entryResultMap = (ResultMap) resultMapObject;
           if (!entryResultMap.hasNestedResultMaps() && entryResultMap.getDiscriminator() != null) {
             Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap()
-                .values();
+              .values();
             if (discriminatedResultMapNames.contains(resultMapId)) {
               entryResultMap.forceNestedResultMaps();
             }
@@ -1139,11 +1202,8 @@ public class Configuration {
      * <p>
      * function arguments are 1st is saved value and 2nd is target value.
      *
-     * @param conflictMessageProducer
-     *          A function for producing a conflict error message
-     *
+     * @param conflictMessageProducer A function for producing a conflict error message
      * @return a conflict error message
-     *
      * @since 3.5.0
      */
     public StrictMap<V> conflictMessageProducer(BiFunction<V, V, String> conflictMessageProducer) {
@@ -1156,7 +1216,7 @@ public class Configuration {
     public V put(String key, V value) {
       if (containsKey(key)) {
         throw new IllegalArgumentException(name + " already contains key " + key
-            + (conflictMessageProducer == null ? "" : conflictMessageProducer.apply(super.get(key), value)));
+          + (conflictMessageProducer == null ? "" : conflictMessageProducer.apply(super.get(key), value)));
       }
       if (key.contains(".")) {
         final String shortKey = getShortName(key);
@@ -1186,7 +1246,7 @@ public class Configuration {
       }
       if (AMBIGUITY_INSTANCE == value) {
         throw new IllegalArgumentException(key + " is ambiguous in " + name
-            + " (try using the full name including the namespace, or rename one of the entries)");
+          + " (try using the full name including the namespace, or rename one of the entries)");
       }
       return value;
     }

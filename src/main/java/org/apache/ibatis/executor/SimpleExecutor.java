@@ -32,6 +32,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * SimpleExecutor是基础的Executor能够完成基本的增删改查操作
+ *
  * @author Clinton Begin
  */
 public class SimpleExecutor extends BaseExecutor {
