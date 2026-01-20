@@ -93,18 +93,22 @@ public class DefaultParameterHandler implements ParameterHandler {
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {
       ParamNameResolver paramNameResolver = mappedStatement.getParamNameResolver();
+      // 所有参数映射信息
       for (int i = 0; i < parameterMappings.size(); i++) {
         ParameterMapping parameterMapping = parameterMappings.get(i);
         if (parameterMapping.getMode() != ParameterMode.OUT) {
           Object value;
+          // 参数属性名称
           String propertyName = parameterMapping.getProperty();
           JdbcType jdbcType = parameterMapping.getJdbcType();
           JdbcType actualJdbcType = jdbcType == null ? getParamJdbcType(ps, i + 1) : jdbcType;
           Type propertyGenericType = null;
+          // 获取对应的typeHandler
           TypeHandler typeHandler = parameterMapping.getTypeHandler();
           if (parameterMapping.hasValue()) {
             value = parameterMapping.getValue();
           } else if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+            // 根据参数属性名称获取参数值
             value = boundSql.getAdditionalParameter(propertyName);
           } else if (parameterObject == null) {
             value = null;
@@ -171,6 +175,7 @@ public class DefaultParameterHandler implements ParameterHandler {
                 + "' nor JDBC type '" + actualJdbcType + "'");
           }
           try {
+            // 调用typeHandler的setParameter为statement对象参数占位符赋值
             typeHandler.setParameter(ps, i + 1, value, jdbcType);
           } catch (TypeException | SQLException e) {
             throw new TypeException("Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
