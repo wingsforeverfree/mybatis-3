@@ -95,10 +95,15 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
       boolean autoCommit) {
     Transaction tx = null;
     try {
+      // TODO 为什么要在这里使用final
       final Environment environment = configuration.getEnvironment();
+      // 创建事务管理器工厂
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+      //创建事务管理器
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      // 根据是定的Excutor类型创建对应的Excutor实例
       final Executor executor = configuration.newExecutor(tx, execType);
+      // 创建SqlSession
       return createSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {
       closeTransaction(tx); // may have fetched a connection so lets call close()

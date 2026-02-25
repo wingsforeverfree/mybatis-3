@@ -118,6 +118,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfsImpl(settings);
       loadCustomLogImpl(settings);
+      // 配置类型的别名
       typeAliasesElement(root.evalNode("typeAliases"));
       pluginsElement(root.evalNode("plugins"));
       objectFactoryElement(root.evalNode("objectFactory"));
