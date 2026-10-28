@@ -88,7 +88,9 @@ public class Plugin implements InvocationHandler {
   private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
     Set<Class<?>> interfaces = new HashSet<>();
     while (type != null) {
+      // 逐层遍历类及父类的直接接口
       for (Class<?> c : type.getInterfaces()) {
+        // 当前类实现的接口，是否正好是插件声明的目标接口。
         if (signatureMap.containsKey(c)) {
           interfaces.add(c);
         }
